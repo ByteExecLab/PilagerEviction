@@ -1,11 +1,12 @@
 name: PilagersEviction
-version: '1.5-SNAPSHOT'
+version: '1.6-SNAPSHOT'
 main: org.byteexeclab.pilagersEviction.PilagersEviction
 api-version: '1.21'
 commands:
-  evict:
-    description: Evict current Pilagers outpost
-    permission: evictpillagers.admin
+  pev:
+    description: PilagersEviction admin commands
+    usage: /pev help
+    permission: pilagerseviction.admin
   permissions:
     evictpillagers.admin:
       default: op

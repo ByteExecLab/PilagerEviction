@@ -100,4 +100,11 @@ public class RedisStore {
         }
         return out;
     }
+
+    public void deleteZone(String zoneId) {
+        requireJedis();
+        String key = prefix() + ":zone:" + zoneId;
+        jedis.del(key);
+        jedis.srem(prefix() + ":index", zoneId);
+    }
 }

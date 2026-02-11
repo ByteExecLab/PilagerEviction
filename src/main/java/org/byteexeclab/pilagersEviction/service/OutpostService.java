@@ -1,13 +1,13 @@
 package org.byteexeclab.pilagersEviction.service;
 
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.StructureType;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.CreatureSpawnEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.byteexeclab.pilagersEviction.model.ClearedZone;
 import org.byteexeclab.pilagersEviction.redis.RedisStore;
@@ -68,8 +68,34 @@ public class OutpostService {
         }
     }
 
+    public void reloadFromConfig() {
+        reloadBlockedReasons();  // the EnumSet version we discussed
+        // add any other "reload caches from config" you want here
+    }
+
+
+    public Set<String> getClearedZoneIds() {
+        return Set.copyOf(clearedZones.keySet());
+    }
+
+    public void unmark(String zoneId) {
+        clearedZones.remove(zoneId);
+        if (redis != null && redis.isEnabled()) {
+            try { redis.deleteZone(zoneId); } catch (Exception ignored) {}
+        }
+    }
+
     public FileConfiguration cfg() {
         return plugin.getConfig();
+    }
+
+    public ItemStack createMarkerItem(NamespacedKey markerKey) {
+        ItemStack item = new ItemStack(Material.NETHER_STAR, 1);
+        ItemMeta meta = item.getItemMeta();
+        meta.setDisplayName("Outpost Marker");
+        meta.getPersistentDataContainer().set(markerKey, PersistentDataType.BYTE, (byte) 1);
+        item.setItemMeta(meta);
+        return item;
     }
 
     public int preventionRadius() {

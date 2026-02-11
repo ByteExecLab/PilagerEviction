@@ -23,9 +23,18 @@ public final class PilagersEviction extends JavaPlugin {
         this.redisStore = new RedisStore(this);
         this.redisStore.connect();
 
-        this.outpostService.reloadBlockedReasons();
         this.outpostService = new OutpostService(this, redisStore);
         this.outpostService.loadCacheFromRedis();
+        this.outpostService.reloadBlockedReasons();
+
+        var admin = new org.byteexeclab.pilagersEviction.commands.AdminCommands(this, outpostService);
+        var cmd = getCommand("pev");
+        if (cmd != null) {
+            cmd.setExecutor(admin);
+            cmd.setTabCompleter(admin);
+        } else {
+            getLogger().severe("Command 'pev' not found. Check plugin.yml!");
+        }
 
         boolean chestEnabled = getConfig().getBoolean("clearTriggers.chestLooted.enabled", true);
         boolean destroyedEnabled = getConfig().getBoolean("clearTriggers.destroyed.enabled", true);
