@@ -1,0 +1,50 @@
+# Redis
+redis:
+  enabled: false
+  host: "127.0.0.1"
+  port: 6379
+  password: ""
+  database: 0
+  keyPrefix: "clearedoutposts"
+
+# How we decide an outpost is "cleared"
+clearTriggers:
+  chestLooted:
+    enabled: true
+    # counts as "looted" if player takes at least 1 item (not just opens)
+    requireItemTaken: true
+
+  destroyed:
+    enabled: true
+    # when true, we scan the outpost area and only clear if it's actually destroyed enough
+    verifyByBlockScan: true
+    scan:
+      radius: 48
+      # "signature" blocks commonly used in outpost structures
+      signatureBlocks:
+        - DARK_OAK_LOG
+        - DARK_OAK_PLANKS
+        - COBBLESTONE
+        - MOSSY_COBBLESTONE
+        - DARK_OAK_FENCE
+        - LADDER
+      # if remaining signature blocks <= this number => consider destroyed
+      remainingThreshold: 120
+
+# How we stop pillagers spawning after cleared
+prevention:
+  radius: 72
+  ignoreRaids: true
+  blockSpawnReasons:
+    - NATURAL
+    - STRUCTURE
+    - PATROL
+
+adminMarker:
+  enabled: true
+  item: NETHER_STAR
+  name: "&cOutpost Marker"
+
+permissions:
+  pilagerseviction.admin:
+    default: op

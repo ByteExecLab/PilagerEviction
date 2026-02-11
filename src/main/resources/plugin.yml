@@ -1,0 +1,13 @@
+name: PilagersEviction
+version: '1.5-SNAPSHOT'
+main: org.byteexeclab.pilagersEviction.PilagersEviction
+api-version: '1.21'
+commands:
+  evict:
+    description: Evict current Pilagers outpost
+    permission: evictpillagers.admin
+  permissions:
+    evictpillagers.admin:
+      default: op
+libraries:
+  - redis.clients:jedis:5.1.3
