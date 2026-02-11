@@ -23,6 +23,7 @@ public final class PilagersEviction extends JavaPlugin {
         this.redisStore = new RedisStore(this);
         this.redisStore.connect();
 
+        this.outpostService.reloadBlockedReasons();
         this.outpostService = new OutpostService(this, redisStore);
         this.outpostService.loadCacheFromRedis();
 
@@ -35,7 +36,7 @@ public final class PilagersEviction extends JavaPlugin {
         if (destroyedEnabled) {
             Bukkit.getPluginManager().registerEvents(new DestroyedOutpostListener(this, outpostService), this);
         }
-        Bukkit.getPluginManager().registerEvents((Listener) new PillagerSpawnBlocker(this, outpostService), this);
+        Bukkit.getPluginManager().registerEvents((Listener) new PillagerSpawnBlocker(outpostService), this);
 
         getServer().getPluginManager().registerEvents(
                 new OutpostMarkerListener(outpostService),

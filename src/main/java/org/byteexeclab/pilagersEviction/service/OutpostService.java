@@ -7,6 +7,7 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.byteexeclab.pilagersEviction.model.ClearedZone;
 import org.byteexeclab.pilagersEviction.redis.RedisStore;
@@ -20,10 +21,20 @@ public class OutpostService {
 
     // in-memory cache of cleared zones keyed by zoneId
     private final Map<String, ClearedZone> clearedZones = new ConcurrentHashMap<>();
+    private EnumSet<CreatureSpawnEvent.SpawnReason> blockedReasons = EnumSet.noneOf(CreatureSpawnEvent.SpawnReason.class);
 
     public OutpostService(JavaPlugin plugin, RedisStore redis) {
         this.plugin = plugin;
         this.redis = redis;
+    }
+
+    public void reloadBlockedReasons() {
+        blockedReasons = EnumSet.noneOf(CreatureSpawnEvent.SpawnReason.class);
+        for (String s : cfg().getStringList("prevention.blockSpawnReasons")) {
+            try {
+                blockedReasons.add(CreatureSpawnEvent.SpawnReason.valueOf(s.trim().toUpperCase(Locale.ROOT)));
+            } catch (Exception ignored) {}
+        }
     }
 
     public void loadCacheFromRedis() {
@@ -69,8 +80,8 @@ public class OutpostService {
         return cfg().getBoolean("prevention.ignoreRaids", true);
     }
 
-    public Set<String> blockSpawnReasons() {
-        return new HashSet<>(cfg().getStringList("prevention.blockSpawnReasons"));
+    public EnumSet<CreatureSpawnEvent.SpawnReason> blockSpawnReasons() {
+        return blockedReasons;
     }
 
     public boolean isLocationInClearedZone(Location loc) {

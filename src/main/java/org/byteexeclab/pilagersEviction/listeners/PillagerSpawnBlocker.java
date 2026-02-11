@@ -4,15 +4,12 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent;
-import org.bukkit.plugin.java.JavaPlugin;
 import org.byteexeclab.pilagersEviction.service.OutpostService;
 
 public class PillagerSpawnBlocker implements Listener {
-    private final JavaPlugin plugin;
     private final OutpostService service;
 
-    public PillagerSpawnBlocker(JavaPlugin plugin, OutpostService service) {
-        this.plugin = plugin;
+    public PillagerSpawnBlocker(OutpostService service) {
         this.service = service;
     }
 
@@ -22,7 +19,7 @@ public class PillagerSpawnBlocker implements Listener {
 
         if (service.ignoreRaids() && e.getSpawnReason() == CreatureSpawnEvent.SpawnReason.RAID) return;
 
-        if (!service.blockSpawnReasons().contains(e.getSpawnReason().name())) return;
+        if (!service.blockSpawnReasons().contains(e.getSpawnReason())) return;
 
         if (service.isLocationInClearedZone(e.getLocation())) {
             e.setCancelled(true);
